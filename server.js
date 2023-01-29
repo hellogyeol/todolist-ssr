@@ -11,32 +11,23 @@ app.set('view engine', 'pug');
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-app.get('/', async (req, res) => {
-  await client.connect();
-  const col = client.db('ssrDb').collection('ssrCol');
+app.get('/', (req, res) => {
+  getList();
+  async function getList() {
+    await client.connect();
+    const col = client.db('ssrDb').collection('ssrCol');
+    // await col.deleteMany({});
+    // await col.insertMany([
+    //   {content: 'test1'}, {content: 'test2'}, {content: 'test3'}
+    // ])
+    const todoList = await col.find({}).toArray();
+    console.log('*********************************************************');
+    console.log(todoList);
 
-  const todoList = await col.find({}).toArray();
-  console.log(todoList);
-
-  res.render('index', {
-    todoList: todoList
-  });
-});
-
-app.post('/', async (req, res) => {
-  await client.connect();
-  const col = client.db('ssrDb').collection('ssrCol');
-
-  await col.insertOne({
-    content: req.body.content
-  });
-
-  const todoList = await col.find({}).toArray();
-  console.log(todoList);
-
-  res.render('index', {
-    todoList: todoList
-  });
+    res.render('index', {
+      todoList: todoList
+    });
+  }
 });
 
 app.listen(port, () => {
