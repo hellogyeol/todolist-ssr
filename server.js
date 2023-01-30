@@ -30,6 +30,24 @@ app.get('/', (req, res) => {
   }
 });
 
+app.post('/', (req, res) => {
+  postList()
+  async function postList() {
+    await client.connect();
+    const col = client.db('ssrDb').collection('ssrCol');
+    await col.insertOne({
+      content: req.body.content
+    });
+    const todoList = await col.find({}).toArray();
+    console.log('*********************************************************');
+    console.log(todoList);
+
+    res.render('index', {
+      todoList: todoList
+    });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
