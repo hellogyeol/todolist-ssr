@@ -48,6 +48,22 @@ app.post('/', (req, res) => {
   }
 });
 
+app.get('/list/clear', (req, res) => {
+  clearList();
+  async function clearList() {
+    await client.connect();
+    const col = client.db('ssrDb').collection('ssrCol');
+    await col.deleteMany({});
+    const todoList = await col.find({}).toArray();
+    console.log('*********************************************************');
+    console.log(todoList);
+
+    res.render('index', {
+      todoList: todoList
+    });
+  }
+});
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
